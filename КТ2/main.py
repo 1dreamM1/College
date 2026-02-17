@@ -1,6 +1,6 @@
 import func as game
 
-def start_game_session():
+def start_game():
     words_pool = game.load_words("words.txt")
     
     keep_playing = True
@@ -37,4 +37,5 @@ def start_game_session():
         keep_playing = game.ask_to_continue()
 
 if __name__ == "__main__":
+
     start_game_session()
