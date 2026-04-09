@@ -51,7 +51,7 @@ class User:
 
     def __setattr__(self, key, value):
         if key in ("_name", "name", "_login", "login", "_password", "password", "_level", "level"):
-            super().__setattr__(key, value)
+            object.__setattr__(self, key, value) 
         else:
             print(f"Неизвестное свойство {key}")
 
@@ -75,10 +75,9 @@ class SuperUser(User):
 
     def __setattr__(self, key, value):
         if key in ("_name", "name", "_login", "login", "_password", "password", "_level", "level", "_admin", "admin"):
-            super().__setattr__(key, value)
+            object.__setattr__(self, key, value)
         else:
             print(f"Неизвестное свойство {key}")
-
 
 user1 = User('Paul McCartney', 'paul', '1234', 3)
 user2 = User('George Harrison', 'george', '5678', 2)
