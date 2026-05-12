@@ -1,41 +1,60 @@
-import func as game
+import random
+import os
 
 def start_game():
-    words_pool = game.load_words("words.txt")
-    
-    keep_playing = True
-    while keep_playing:
-        current_word, description = game.get_random_word(words_pool)
-        
-        if not current_word:
-            game.show_message("Слова в списке закончились!")
+    try:
+        with open("words.txt", "r", encoding="utf-8") as file:
+            words_list = [line.strip().split(':') for line in file if ':' in line]
+    except FileNotFoundError:
+        print("Файл не найден")
+        return
+
+    if not words_list:
+        print("Список слов пуст")
+        return
+
+    word_data = random.choice(words_list)
+    target_word = word_data[0].lower()
+    description = word_data[1]
+
+    table = ["*"] * len(target_word)
+    lives = 6
+
+    print("Добро пожаловать в игру Виселица!")
+
+    while lives > 0 and "*" in table:
+        stage_file = f"stage_{lives}.txt"
+        if os.path.exists(stage_file):
+            with open(stage_file, "r", encoding="utf-8") as f:
+                print(f"\n{f.read()}")
+        else:
+            print("\n[Изображение виселицы отсутствует]")
+
+        print(f"Подсказка: {description}")
+        print(f"Слово: {''.join(table)}")
+        print(f"Осталось попыток: {lives}")
+
+        guess = input("\nВведите букву или слово целиком: ").strip().lower()
+
+        if guess == target_word:
+            table = list(target_word)
             break
-            
-        table = game.create_table(current_word)
-        lives = game.get_init_lives()
-        
-        while game.is_alive(lives):
-            game.show_game_state(table, description, lives)
-            answer = game.prompt_guess()
-            
-            if game.is_word_correct(current_word, answer):
-                game.show_message(f"Поздравляем! Вы угадали слово: {current_word.upper()}")
-                break
-            
-            if len(answer) == 1 and game.update_table(current_word, table, answer):
-                if game.is_solved(table):
-                    game.show_game_state(table, description, lives)
-                    game.show_message("Вы открыли все буквы! Победа!")
-                    break
-            else:
-                lives = game.decrease_lives(lives)
-                game.show_message("Неправильно! Вы теряете жизнь.")
-        
-        if not game.is_alive(lives):
-            game.show_message(f"Вы проиграли. Загаданное слово было: {current_word.upper()}")
-            
-        keep_playing = game.ask_to_continue()
 
-if __name__ == "__main__":
+        if len(guess) == 1 and guess in target_word:
+            for i in range(len(target_word)):
+                if target_word[i] == guess:
+                    table[i] = guess
+            print("Верно! Вы открыли букву.")
+        else:
+            lives -= 1
+            print("Неправильно! Вы теряете жизнь.")
 
-    start_game_session()
+    if "*" not in table:
+        print(f"\nПоздравляем! Вы угадали слово: {target_word.upper()}")
+    else:
+        if os.path.exists("stage_0.txt"):
+            with open("stage_0.txt", "r", encoding="utf-8") as f:
+                print(f"\n{f.read()}")
+        print(f"\nВы проиграли. Загаданное слово было: {target_word.upper()}")
+
+start_game()
