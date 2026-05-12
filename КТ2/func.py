@@ -17,7 +17,7 @@ def get_random_word(words_list):
     return choice[0].lower(), choice[1]
 
 def create_table(word):
-    return ["■"] * len(word)
+    return ["*"] * len(word)
 
 def show_game_state(table, description, lives):
     frame = "Виселица не найдена"
@@ -50,7 +50,7 @@ def is_alive(lives):
     return lives > 0
 
 def is_solved(table):
-    return "■" not in table
+    return "*" not in table
 
 def show_message(msg):
     print(msg)
